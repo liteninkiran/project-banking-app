@@ -26,6 +26,13 @@ return new class extends Migration
             $table->foreignId('transaction_type_id')
                 ->constrained('transaction_types')
                 ->onDelete('restrict');
+
+            $table->unique([
+                'account_id',
+                'date',
+                'transaction_type_id',
+                'amount',
+            ], 'uc_transaction');
         });
     }
 

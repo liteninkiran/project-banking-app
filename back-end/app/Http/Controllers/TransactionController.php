@@ -2,12 +2,29 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Transaction;
+// Core
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+
+// Models
+use App\Models\Transaction;
+
+// Validation
 use App\Http\Requests\MassImportTransactionRequest;
+
+// Services
+use App\Services\TransactionImportService;
 
 class TransactionController extends Controller
 {
+
+    protected $importService;
+
+    public function __construct(TransactionImportService $importService)
+    {
+        $this->importService = $importService;
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -69,8 +86,13 @@ class TransactionController extends Controller
      */
     public function massImport(MassImportTransactionRequest $request)
     {
-        $data = $request->validated();
-        return response()->json($data);
-    }
+        $transactions = collect($request->validated());
+        $imported = $this->importService->import($transactions);
 
+        return response()->json([
+            'message' => 'Transactions imported successfully.',
+            'imported' => $imported->sum(),
+            'skipped' => $transactions->count() - $imported->sum(),
+        ]);
+    }
 }

@@ -19,7 +19,7 @@ class AccountFactory extends Factory
         return [
             'account_name' => $this->faker->name(),
             'account_number' => $this->faker->unique()->numerify('########'),
-            'sort_code' => $this->faker->numerify('##-##-##'),
+            'sort_code' => $this->faker->numerify('######'),
         ];
     }
 }
