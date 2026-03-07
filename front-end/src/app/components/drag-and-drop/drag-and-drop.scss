@@ -5,6 +5,9 @@
 }
 
 .drop-zone {
+  display: grid;
+  align-items: end;
+  height: 500px;
   border: 2px dashed #007bff;
   padding: 30px;
   margin-bottom: 20px;
