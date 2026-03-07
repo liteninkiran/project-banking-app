@@ -12,6 +12,9 @@ export class DragAndDrop {
   files: File[] = [];
   uploading = false;
 
+  private fileContent = '';
+  private filesProcessed = 0;
+
   constructor(private http: HttpClient) {}
 
   onFileDropped(dt: DataTransfer | null) {
@@ -39,20 +42,54 @@ export class DragAndDrop {
   uploadFiles() {
     if (!this.files.length) return;
 
-    const formData = new FormData();
-    this.files.forEach((file) => formData.append('files[]', file, file.name));
+    this.fileContent = '';
+    this.filesProcessed = 0;
+    this.files.forEach((file) => this.processFile(file));
+  }
 
-    this.uploading = true;
-    this.http.post('https://your-backend-endpoint.com/upload', formData).subscribe({
-      next: (res) => {
-        console.log('Upload successful', res);
-        this.files = [];
-        this.uploading = false;
-      },
-      error: (err) => {
-        console.error('Upload failed', err);
-        this.uploading = false;
-      },
-    });
+  private processFile(file: File) {
+    if (file.type === 'text/csv' || file.name.endsWith('.csv')) {
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        const text = e.target?.result as string;
+        this.fileContent += text + '\n';
+        this.filesProcessed++;
+
+        console.log(text);
+
+        // Check if all files are done
+        if (this.filesProcessed === this.files.length) {
+          this.completionCallback();
+        }
+      };
+
+      reader.onerror = () => {
+        alert(`Error reading file: ${file.name}`);
+        this.filesProcessed++;
+      };
+
+      reader.readAsText(file);
+    } else {
+      alert('Only CSV files are allowed');
+      this.filesProcessed++;
+    }
+  }
+
+  private completionCallback() {
+    // console.log('Combined file content:', this.fileContent);
+    // // POST to back-end
+    // this.uploading = true;
+    // this.http.post('https://your-backend-endpoint.com/upload', fileContent).subscribe({
+    //   next: (res) => {
+    //     console.log('Upload successful', res);
+    //     this.files = [];
+    //     this.uploading = false;
+    //   },
+    //   error: (err) => {
+    //     console.error('Upload failed', err);
+    //     this.uploading = false;
+    //   },
+    // });
   }
 }
