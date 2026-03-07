@@ -6,6 +6,7 @@ namespace App\Services;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Exception;
 
 // Models
 use App\Models\Transaction;
@@ -14,53 +15,54 @@ use App\Models\TransactionType;
 
 class TransactionImportService
 {
-    private $lookup;
-    private $attrs;
+    private Account $account;
+    private Collection $imported;
+    private Collection $transactions;
 
     public function import(Collection $transactions): Collection
     {
-        $imported = collect();
+        $this->imported = collect();
+        $this->transactions = $transactions;
 
-        DB::transaction(function () use ($transactions, &$imported) {
+        DB::transaction(fn () => $this->useTransaction());
 
-            $transactions->each(function ($tx) use (&$imported) {
-
-                $this->setAttributes(
-                    $tx['account_number'],
-                    $tx['account_name']
-                );
-
-                // 1️⃣ Find or create account
-                $account = Account::firstOrCreate($this->lookup, $this->attrs);
-
-                // 2️⃣ Lookup transaction type
-                $trType = TransactionType::where('code', $tx['type'])->first();
-                if (!$trType) {
-                    throw new \Exception("Transaction type '{$tx['type']}' not found.");
-                }
-
-                // 3️⃣ Create transaction
-                $date = Carbon::createFromFormat('d/m/Y', $tx['date'])->startOfDay();
-                $isRowAdded = Transaction::insertOrIgnore([
-                    'date' => $date,
-                    'amount' => $tx['value'],
-                    'balance' => $tx['balance'],
-                    'description' => $tx['description'],
-                    'account_id' => $account->id,
-                    'transaction_type_id' => $trType->id,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
-
-                $imported->push($isRowAdded);
-            });
-
-        });
-
-        return $imported;
+        return $this->imported;
     }
 
-    private function setAttributes(string $account, string $name)
+    private function useTransaction() {
+        // 1️⃣ Find or create account
+        $this->setAccount(
+            $this->transactions[0]['account_number'],
+            $this->transactions[0]['account_name']
+        );
+
+        $this->transactions->each(fn ($tr) => $this->createTransaction($tr));
+    }
+
+    private function createTransaction($transaction) {
+        // 2️⃣ Lookup transaction type
+        $trType = TransactionType::where('code', $transaction['type'])->first();
+        if (!$trType) {
+            throw new Exception("Transaction type '{$transaction['type']}' not found.");
+        }
+
+        // 3️⃣ Create transaction
+        $date = Carbon::createFromFormat('d/m/Y', $transaction['date'])->startOfDay();
+        $isRowAdded = Transaction::insertOrIgnore([
+            'date' => $date,
+            'amount' => $transaction['value'],
+            'balance' => $transaction['balance'],
+            'description' => $transaction['description'],
+            'account_id' => $this->account->id,
+            'transaction_type_id' => $trType->id,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $this->imported->push($isRowAdded);
+    }
+
+    private function setAccount(string $account, string $name)
     {
         if (str_starts_with($account, "'")) {
             $account = substr($account, 1);
@@ -68,13 +70,15 @@ class TransactionImportService
 
         [$sortCode, $accountNumber] = explode('-', $account);
 
-        $this->lookup = [
+        $lookup = [
             'account_number' => $accountNumber,
         ];
 
-        $this->attrs = [
+        $attrs = [
             'account_name' => $name,
             'sort_code' => $sortCode,
         ];
+
+        $this->account = Account::firstOrCreate($lookup, $attrs);
     }
 }
