@@ -1,26 +1,5 @@
-<div class="container">
-  <h1>CSV Drag & Drop Upload</h1>
-
-  <div
-    class="drop-zone"
-    (drop)="onFileDropped($event.dataTransfer); $event.preventDefault()"
-    (dragover)="$event.preventDefault()"
-  >
-    <p>Drag & Drop CSV files here</p>
-    <input type="file" multiple (change)="fileBrowseHandler($event.target.files)" />
-  </div>
-
-  @if (files.length) {
-    <div>
-      <h3>Files to upload:</h3>
-      <ul>
-        @for (file of files; track file.name) {
-          <li>{{ file.name }}</li>
-        }
-      </ul>
-      <button (click)="uploadFiles()" [disabled]="uploading">
-        {{ uploading ? 'Uploading...' : 'Upload' }}
-      </button>
-    </div>
-  }
-</div>
+<nav>
+  <a routerLink="/">Home</a> |
+  <a routerLink="/upload">Upload CSV</a>
+</nav>
+<router-outlet></router-outlet>
