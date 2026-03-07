@@ -4,7 +4,6 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Validator;
-use Illuminate\Support\Collection;
 
 class MassImportTransactionRequest extends FormRequest
 {
