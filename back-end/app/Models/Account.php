@@ -18,5 +18,10 @@ class Account extends Model
         'sort_code',
     ];
 
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
     public $timestamps = true;
 }

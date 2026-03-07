@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Database\Seeders\AccountSeeder; 
+use Database\Seeders\TransactionSeeder; 
 use Database\Seeders\TransactionTypeSeeder; 
 
 class DatabaseSeeder extends Seeder
@@ -24,5 +25,6 @@ class DatabaseSeeder extends Seeder
 
         $this->call(TransactionTypeSeeder::class);
         $this->call(AccountSeeder::class);
+        $this->call(TransactionSeeder::class);
     }
 }
