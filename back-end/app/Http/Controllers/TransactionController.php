@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Transaction;
 use Illuminate\Http\Request;
+use App\Http\Requests\MassImportTransactionRequest;
 
 class TransactionController extends Controller
 {
@@ -66,9 +67,10 @@ class TransactionController extends Controller
     /**
      * Mass import
      */
-    public function massImport(Transaction $transaction)
+    public function massImport(MassImportTransactionRequest $request)
     {
-        return request()->all();
+        $data = $request->validated();
+        return response()->json($data);
     }
 
 }
