@@ -62,4 +62,13 @@ class TransactionController extends Controller
     {
         //
     }
+
+    /**
+     * Mass import
+     */
+    public function massImport(Transaction $transaction)
+    {
+        return request()->all();
+    }
+
 }
