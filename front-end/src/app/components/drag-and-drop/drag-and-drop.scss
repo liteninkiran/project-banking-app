@@ -1,10 +1,10 @@
-.container {
+#container {
   max-width: 500px;
   margin: 50px auto;
   text-align: center;
 }
 
-.drop-zone {
+#drop-zone {
   display: grid;
   align-items: end;
   height: 500px;
@@ -15,6 +15,31 @@
   transition: background 0.3s;
 }
 
-.drop-zone:hover {
-  background: #e6f0ff;
+#select-files {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#drop-zone:hover {
+  // background: #e6f0ff;
+}
+
+#files-container {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+#file-list-container {
+  text-align: left;
+}
+
+#button-container {
+  display: grid;
+  grid-auto-flow: column;
+  justify-content: end;
+  gap: 10px;
+}
+
+#upload-header {
+  text-align: left;
 }

@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { RuxButton, RuxInput } from '@astrouxds/angular';
 
 @Component({
   selector: 'app-drag-and-drop',
   templateUrl: './drag-and-drop.html',
   styleUrl: './drag-and-drop.scss',
   standalone: true,
-  imports: [],
+  imports: [RuxButton, RuxInput],
 })
 export class DragAndDrop {
   files: File[] = [];
@@ -24,9 +25,12 @@ export class DragAndDrop {
     }
   }
 
-  fileBrowseHandler(files: FileList | null) {
-    if (files) {
-      this.addFiles(files);
+  fileBrowseHandler(event: Event) {
+    if (event.target) {
+      const dt = event.target as HTMLInputElement;
+      if (dt.files) {
+        this.addFiles(dt.files);
+      }
     }
   }
 
@@ -36,6 +40,10 @@ export class DragAndDrop {
     this.fileContent = '';
     this.expectedHeader = null;
     this.processNextFile(0);
+  }
+
+  cancel() {
+    this.files = [];
   }
 
   private processNextFile(index: number) {
