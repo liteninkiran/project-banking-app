@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { RuxButton, RuxInput } from '@astrouxds/angular';
+import { RuxButton } from '@astrouxds/angular';
 
 @Component({
   selector: 'app-drag-and-drop',
   templateUrl: './drag-and-drop.html',
   styleUrl: './drag-and-drop.scss',
   standalone: true,
-  imports: [RuxButton, RuxInput],
+  imports: [RuxButton],
 })
 export class DragAndDrop {
   files: File[] = [];

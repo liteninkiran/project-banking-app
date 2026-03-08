@@ -5,21 +5,23 @@
 @import '@fontsource/roboto/500.css'; /* Medium */
 @import '@fontsource/roboto/700.css'; /* Bold */
 
-/* Set Roboto as the default font for the whole app */
-body,
-html {
-  font-family: 'Roboto', sans-serif;
-  font-weight: 400;
-  line-height: 1.5;
-  margin: 0;
-  padding: 0;
+/* Default (light mode) */
+body {
+  --astro-background: #ffffff;
+  --astro-text: #000000;
 }
 
-/* Astro UXDS - optional global tweaks */
-input,
-button,
-textarea,
-select {
-  font-family: 'Roboto', sans-serif;
-  font-weight: 400;
+/* Dark mode override */
+body.dark-mode {
+  --astro-background: #111517;
+  --astro-text: #ffffff;
+}
+
+/* Apply to body */
+body {
+  background-color: var(--astro-background);
+  color: var(--astro-text);
+  transition:
+    background-color 0.3s,
+    color 0.3s;
 }
