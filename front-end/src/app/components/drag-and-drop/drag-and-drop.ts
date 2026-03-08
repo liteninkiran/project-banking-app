@@ -12,8 +12,9 @@ export class DragAndDrop {
   files: File[] = [];
   uploading = false;
 
+  private expectedHeader: string | null = null;
   private fileContent = '';
-  private filesProcessed = 0;
+  private fileKeys = new Set<string>();
 
   constructor(private http: HttpClient) {}
 
@@ -29,55 +30,79 @@ export class DragAndDrop {
     }
   }
 
-  private addFiles(files: FileList) {
-    for (let i = 0; i < files.length; i++) {
-      if (files[i].type === 'text/csv') {
-        this.files.push(files[i]);
-      } else {
-        alert('Only CSV files are allowed!');
-      }
-    }
-  }
-
   uploadFiles() {
     if (!this.files.length) return;
 
     this.fileContent = '';
-    this.filesProcessed = 0;
-    this.files.forEach((file) => this.processFile(file));
+    this.expectedHeader = null;
+    this.processNextFile(0);
   }
 
-  private processFile(file: File) {
-    if (file.type === 'text/csv' || file.name.endsWith('.csv')) {
+  private processNextFile(index: number) {
+    if (index >= this.files.length) {
+      this.completionCallback();
+      return;
+    }
+
+    const file = this.files[index];
+
+    this.validateHeader(file, (valid) => {
+      if (!valid) return;
+
       const reader = new FileReader();
 
       reader.onload = (e) => {
         const text = e.target?.result as string;
         this.fileContent += text + '\n';
-        this.filesProcessed++;
-
-        console.log(text);
-
-        // Check if all files are done
-        if (this.filesProcessed === this.files.length) {
-          this.completionCallback();
-        }
+        this.processNextFile(index + 1);
       };
 
       reader.onerror = () => {
-        alert(`Error reading file: ${file.name}`);
-        this.filesProcessed++;
+        alert(`Error reading ${file.name}`);
       };
 
       reader.readAsText(file);
-    } else {
-      alert('Only CSV files are allowed');
-      this.filesProcessed++;
-    }
+    });
+  }
+
+  private validateHeader(file: File, callback: (valid: boolean) => void) {
+    const chunk = file.slice(0, 4096);
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+      const text = e.target?.result as string;
+
+      const firstLine = text
+        .split(/\r?\n/)
+        .map((l) => l.trim())
+        .find((l) => l.length > 0);
+
+      if (!firstLine) {
+        alert(`File ${file.name} is empty`);
+        callback(false);
+        return;
+      }
+
+      if (this.expectedHeader === null) {
+        this.expectedHeader = firstLine;
+        callback(true);
+        return;
+      }
+
+      if (firstLine !== this.expectedHeader) {
+        alert(`File ${file.name} has different headers`);
+        callback(false);
+        return;
+      }
+
+      callback(true);
+    };
+
+    reader.readAsText(chunk);
   }
 
   private completionCallback() {
-    // console.log('Combined file content:', this.fileContent);
+    console.log('Combined file content:', this.fileContent);
     // // POST to back-end
     // this.uploading = true;
     // this.http.post('https://your-backend-endpoint.com/upload', fileContent).subscribe({
@@ -91,5 +116,29 @@ export class DragAndDrop {
     //     this.uploading = false;
     //   },
     // });
+  }
+
+  private addFiles(files: FileList) {
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+
+      if (!(file.type === 'text/csv' || file.name.endsWith('.csv'))) {
+        alert('Only CSV files are allowed!');
+        continue;
+      }
+
+      const key = this.getFileKey(file);
+
+      if (this.fileKeys.has(key)) {
+        continue;
+      }
+
+      this.fileKeys.add(key);
+      this.files.push(file);
+    }
+  }
+
+  private getFileKey(file: File): string {
+    return `${file.name}-${file.size}-${file.lastModified}`;
   }
 }
