@@ -1,5 +1,6 @@
+import { DatePipe } from '@angular/common';
 import { Component } from '@angular/core';
-import { RuxButton, RuxIcon } from '@astrouxds/angular';
+import { RuxButton, RuxClock, RuxGlobalStatusBar, RuxIcon } from '@astrouxds/angular';
 
 const dayIcon = 'brightness-2';
 const nightIcon = 'brightness-7';
@@ -12,17 +13,15 @@ const darkTheme = 'dark-theme';
   templateUrl: './header.html',
   styleUrl: './header.scss',
   standalone: true,
-  imports: [RuxButton, RuxIcon],
+  imports: [RuxButton, RuxIcon, RuxGlobalStatusBar, RuxClock, DatePipe],
 })
 export class Header {
-  darkMode = true; // default to dark mode
+  darkMode = true;
   icon = nightIcon;
+  myDate = new Date();
 
   constructor() {
-    // Check saved preference in localStorage
-    const saved = localStorage.getItem('theme');
-
-    if (saved === lightTheme) {
+    if (localStorage.getItem('theme') === lightTheme) {
       this.darkMode = false;
     }
 
@@ -30,6 +29,8 @@ export class Header {
   }
 
   ngOnInit() {}
+
+  toggleSidenav() {}
 
   toggleTheme() {
     this.darkMode = !this.darkMode;
