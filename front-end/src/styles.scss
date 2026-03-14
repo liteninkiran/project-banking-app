@@ -5,22 +5,9 @@
 @import '@fontsource/roboto/500.css'; /* Medium */
 @import '@fontsource/roboto/700.css'; /* Bold */
 
-/* Default (light mode) */
 body {
-  --astro-background: #ffffff;
-  --astro-text: #000000;
-}
-
-/* Dark mode override */
-body.dark-mode {
-  --astro-background: #111517;
-  --astro-text: #ffffff;
-}
-
-/* Apply to body */
-body {
-  background-color: var(--astro-background);
-  color: var(--astro-text);
+  background-color: var(--color-background-base-default);
+  color: var(--color-text-primary);
   transition:
     background-color 0.3s,
     color 0.3s;

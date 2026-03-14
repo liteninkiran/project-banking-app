@@ -4,6 +4,9 @@ import { RuxButton, RuxIcon } from '@astrouxds/angular';
 const dayIcon = 'brightness-2';
 const nightIcon = 'brightness-7';
 
+const lightTheme = 'light-theme';
+const darkTheme = 'dark-theme';
+
 @Component({
   selector: 'app-header',
   templateUrl: './header.html',
@@ -19,7 +22,7 @@ export class Header {
     // Check saved preference in localStorage
     const saved = localStorage.getItem('theme');
 
-    if (saved === 'light') {
+    if (saved === lightTheme) {
       this.darkMode = false;
     }
 
@@ -31,11 +34,11 @@ export class Header {
   toggleTheme() {
     this.darkMode = !this.darkMode;
     this.icon = this.darkMode ? dayIcon : nightIcon;
-    localStorage.setItem('theme', this.darkMode ? 'dark' : 'light');
+    localStorage.setItem('theme', this.darkMode ? darkTheme : lightTheme);
     this.applyClass();
   }
 
   private applyClass() {
-    document.body.classList.toggle('dark-mode', this.darkMode);
+    document.body.classList.toggle(lightTheme, !this.darkMode);
   }
 }

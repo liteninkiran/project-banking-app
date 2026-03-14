@@ -8,11 +8,11 @@
   display: grid;
   align-items: end;
   height: 500px;
-  border: 2px dashed #007bff;
+  border: 2px dashed var(--color-border-interactive-default);
   padding: 30px;
   margin-bottom: 20px;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: background 0.7s;
 }
 
 #select-files {
@@ -21,7 +21,7 @@
 }
 
 #drop-zone:hover {
-  // background: #e6f0ff;
+  background: var(--color-background-base-hover);
 }
 
 #files-container {
