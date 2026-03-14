@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RuxButton, RuxClock, RuxGlobalStatusBar, RuxIcon } from '@astrouxds/angular';
 
 const dayIcon = 'brightness-2';
@@ -12,6 +12,7 @@ const darkTheme = 'dark-theme';
   selector: 'app-header',
   templateUrl: './header.html',
   styleUrl: './header.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [RuxButton, RuxIcon, RuxGlobalStatusBar, RuxClock, DatePipe],
 })

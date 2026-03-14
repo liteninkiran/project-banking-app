@@ -1,4 +1,13 @@
 <div id="container">
+  @if (errMsg) {
+    <rux-notification
+      open=""
+      status="critical"
+      [message]="errMsg"
+      (ruxclosed)="bannerClosed()"
+    ></rux-notification>
+  }
+
   <h1>CSV Drag & Drop Upload</h1>
 
   <div

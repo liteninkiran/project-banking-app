@@ -1,13 +1,14 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { RuxButton } from '@astrouxds/angular';
+import { RuxButton, RuxNotification } from '@astrouxds/angular';
 
 @Component({
   selector: 'app-drag-and-drop',
   templateUrl: './drag-and-drop.html',
   styleUrl: './drag-and-drop.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [RuxButton],
+  imports: [RuxButton, RuxNotification],
 })
 export class DragAndDrop {
   files: File[] = [];
@@ -17,7 +18,12 @@ export class DragAndDrop {
   private fileContent = '';
   private fileKeys = new Set<string>();
 
-  constructor(private http: HttpClient) {}
+  public errMsg = '';
+
+  constructor(
+    private http: HttpClient,
+    private cd: ChangeDetectorRef,
+  ) {}
 
   onFileDropped(dt: DataTransfer | null) {
     if (dt?.files) {
@@ -36,7 +42,6 @@ export class DragAndDrop {
 
   uploadFiles() {
     if (!this.files.length) return;
-
     this.fileContent = '';
     this.expectedHeader = null;
     this.processNextFile(0);
@@ -44,6 +49,11 @@ export class DragAndDrop {
 
   cancel() {
     this.files = [];
+    this.cd.markForCheck();
+  }
+
+  bannerClosed() {
+    this.errMsg = '';
   }
 
   private processNextFile(index: number) {
@@ -110,7 +120,9 @@ export class DragAndDrop {
   }
 
   private completionCallback() {
-    console.log('Combined file content:', this.fileContent);
+    this.cancel();
+    console.log('File Content:');
+    console.log(this.fileContent);
     // // POST to back-end
     // this.uploading = true;
     // this.http.post('https://your-backend-endpoint.com/upload', fileContent).subscribe({
@@ -127,23 +139,19 @@ export class DragAndDrop {
   }
 
   private addFiles(files: FileList) {
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-
-      if (!(file.type === 'text/csv' || file.name.endsWith('.csv'))) {
-        alert('Only CSV files are allowed!');
-        continue;
+    const isFileValid = (file: File) => file.type === 'text/csv' && file.name.endsWith('.csv');
+    const processFile = (file: File) => {
+      if (!isFileValid(file)) {
+        this.errMsg = 'Only CSV files are allowed';
+      } else {
+        const key = this.getFileKey(file);
+        if (!this.fileKeys.has(key)) {
+          this.fileKeys.add(key);
+          this.files.push(file);
+        }
       }
-
-      const key = this.getFileKey(file);
-
-      if (this.fileKeys.has(key)) {
-        continue;
-      }
-
-      this.fileKeys.add(key);
-      this.files.push(file);
-    }
+    };
+    Array.from(files).forEach(processFile);
   }
 
   private getFileKey(file: File): string {
