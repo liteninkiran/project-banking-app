@@ -11,8 +11,14 @@
     </rux-button>
 
     <div slot="right-side" id="date-container">
-      <span id="date">{{ myDate | date: 'dd/MM/yyyy' }}</span>
-      <rux-clock timezone="Europe/London" hideLabels hideDate></rux-clock>
+      <!-- <span id="date">{{ time$ | async | date: 'EEEE dd/MM/yyyy' }}</span> -->
+      <rux-clock
+        timezone="Europe/London"
+        hideLabels
+        hideDate
+        [dateIn]="time$ | async"
+        static
+      ></rux-clock>
     </div>
 
     <rux-button class="toggle-theme" (click)="toggleTheme()" slot="right-side" borderless>
