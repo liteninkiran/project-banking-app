@@ -36,6 +36,8 @@ type ColumnFormControls = {
   [key: string]: ColumnFormGroup;
 };
 
+const DEFAULT_FORMAT = 'd/m/Y';
+
 @Component({
   selector: 'app-map-columns',
   templateUrl: './map-columns.html',
@@ -97,10 +99,11 @@ export class MapColumns implements OnInit {
       };
     };
     const createControl = (col: string) => {
-      const defaultValue: ColumnType | '' = col.endsWith('Date') ? 'date' : '';
+      const defaultType: ColumnType | '' = col.endsWith('Date') ? 'date' : 'string';
+      const defaultFormat = col.endsWith('Date') ? DEFAULT_FORMAT : '';
       const controls = {
-        type: this.fb.control<ColumnType | ''>(defaultValue, options),
-        format: this.fb.control<string>(''),
+        type: this.fb.control<ColumnType | ''>(defaultType, options),
+        format: this.fb.control<string>(defaultFormat),
       };
       const groupOptions = { validators: dateFormatRequiredValidator() };
       group[col] = this.fb.group(controls, groupOptions);
@@ -121,11 +124,24 @@ export class MapColumns implements OnInit {
     }
   }
 
-  formChange(event: Event, col: string, field: 'type' | 'format') {
-    const target = event.target as any;
+  typeChange(event: Event, col: string) {
+    const value = this.getVal(event);
     this.form.controls[col].patchValue({
-      [field]: target.value,
+      type: value,
+      format: value === 'date' ? DEFAULT_FORMAT : '',
     });
+  }
+
+  formatChange(event: Event, col: string) {
+    const value = this.getVal(event);
+    this.form.controls[col].patchValue({
+      format: value,
+    });
+  }
+
+  getVal(event: Event) {
+    const target = event.target as any;
+    return target.value;
   }
 
   goBack() {

@@ -12,9 +12,9 @@
         [errorText]="
           submitted && form.controls[col.camel].controls.type.invalid ? 'Please select a type' : ''
         "
-        (ruxchange)="formChange($event, col.camel, 'type')"
+        (ruxchange)="typeChange($event, col.camel)"
       >
-        <rux-option value="" selected label="Select an option"></rux-option>
+        <!-- <rux-option value="" selected label="Select an option"></rux-option> -->
         @for (type of columnTypes; track type) {
           <rux-option [value]="type" [label]="type | titlecase"></rux-option>
         }
@@ -30,7 +30,7 @@
               ? 'Please enter a date format'
               : ''
           "
-          (ruxchange)="formChange($event, col.camel, 'format')"
+          (ruxchange)="formatChange($event, col.camel)"
         ></rux-input>
       }
     </div>
