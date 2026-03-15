@@ -24,4 +24,8 @@ export class UploadData {
     this.columns = fileData[0].split(/\r?\n/)[0];
     this.activeTab = 'mapColumnsTab';
   }
+
+  public cancelMap() {
+    this.activeTab = 'selectFilesTab';
+  }
 }

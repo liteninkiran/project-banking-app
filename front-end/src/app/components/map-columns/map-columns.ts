@@ -1,5 +1,12 @@
 import { TitleCasePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+} from '@angular/core';
 import {
   NonNullableFormBuilder,
   FormGroup,
@@ -30,7 +37,9 @@ type ColumnFormControls = {
   imports: [RuxButton, RuxSelect, RuxOption, ReactiveFormsModule, TitleCasePipe],
 })
 export class MapColumns implements OnInit {
-  @Input() private columns = '';
+  @Input() public columns = '';
+
+  @Output() public cancel = new EventEmitter<void>();
 
   public columnHeaders: ColumnHeader[] = [];
   public form!: FormGroup<ColumnFormControls>;
@@ -78,5 +87,9 @@ export class MapColumns implements OnInit {
   selectChange(event: Event, col: string) {
     const target = event.target as any;
     this.form.controls[col].setValue(target.value);
+  }
+
+  goBack() {
+    this.cancel.emit();
   }
 }

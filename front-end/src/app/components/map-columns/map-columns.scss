@@ -5,3 +5,15 @@
 form {
   margin-top: 50px;
 }
+
+.submit-button {
+  display: grid;
+  grid-template-columns: auto auto;
+  justify-content: end;
+  margin-top: 50px;
+  column-gap: 20px;
+
+  rux-button {
+    width: 100px;
+  }
+}
