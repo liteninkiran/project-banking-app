@@ -20,6 +20,10 @@
     ><app-drag-and-drop (fileData)="getFileData($event)"></app-drag-and-drop
   ></rux-tab-panel>
   <rux-tab-panel id="mapColumnsPanel" aria-labelledby="mapColumnsTab"
-    ><app-map-columns [columns]="columns" (cancel)="cancelMap()"></app-map-columns
+    ><app-map-columns
+      [columns]="columns"
+      (cancel)="cancelMap()"
+      (submit)="handleMappedColumns($event)"
+    ></app-map-columns
   ></rux-tab-panel>
 </rux-tab-panels>

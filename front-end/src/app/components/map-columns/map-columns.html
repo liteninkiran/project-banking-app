@@ -1,4 +1,4 @@
-<form [formGroup]="form" (ngSubmit)="onSubmit()">
+<form [formGroup]="form">
   @for (col of columnHeaders; track col) {
     <div class="form-row" [class.single]="form.controls[col.camel].controls.type.value !== 'date'">
       <rux-select
@@ -37,7 +37,7 @@
   }
 
   <div class="submit-button">
-    <rux-button type="button" secondary (click)="goBack()">Back</rux-button>
-    <rux-button type="submit">Submit</rux-button>
+    <rux-button type="button" (click)="goBack()" secondary>Back</rux-button>
+    <rux-button type="button" (click)="onSubmit()">Submit</rux-button>
   </div>
 </form>

@@ -20,20 +20,32 @@ import {
 import { RuxButton, RuxSelect, RuxOption, RuxInput } from '@astrouxds/angular';
 import { toCamelCase } from '../../utils/helper';
 
-type ColumnType = 'string' | 'number' | 'date';
+type ColumnType = 'string' | 'number' | 'date' | '';
 
 type ColumnHeader = {
   label: string;
   camel: string;
 };
 
-type ColumnFormGroup = FormGroup<{
-  type: FormControl<ColumnType | ''>;
+type ColumnValue = {
+  type: FormControl<ColumnType>;
   format: FormControl<string>;
-}>;
+};
+
+type ColumnFormGroup = FormGroup<ColumnValue>;
 
 type ColumnFormControls = {
   [key: string]: ColumnFormGroup;
+};
+
+type MapColumnsFormValue = {
+  [column: string]: ColumnValue;
+};
+
+export type MappedColumn = {
+  column: string;
+  type: ColumnType;
+  format: string;
 };
 
 const DEFAULT_FORMAT = 'd/m/Y';
@@ -50,6 +62,7 @@ export class MapColumns implements OnInit {
   @Input() public columns = '';
 
   @Output() public cancel = new EventEmitter<void>();
+  @Output() public submit = new EventEmitter<MappedColumn[]>();
 
   public columnHeaders: ColumnHeader[] = [];
   public form!: FormGroup<ColumnFormControls>;
@@ -99,10 +112,10 @@ export class MapColumns implements OnInit {
       };
     };
     const createControl = (col: string) => {
-      const defaultType: ColumnType | '' = col.endsWith('Date') ? 'date' : 'string';
+      const defaultType: ColumnType = col.endsWith('Date') ? 'date' : 'string';
       const defaultFormat = col.endsWith('Date') ? DEFAULT_FORMAT : '';
       const controls = {
-        type: this.fb.control<ColumnType | ''>(defaultType, options),
+        type: this.fb.control<ColumnType>(defaultType, options),
         format: this.fb.control<string>(defaultFormat),
       };
       const groupOptions = { validators: dateFormatRequiredValidator() };
@@ -115,13 +128,9 @@ export class MapColumns implements OnInit {
 
   onSubmit() {
     this.submitted = true;
-    console.log(this.form.valid, this.form.value);
-
-    if (this.form.valid) {
-      // Send to backend...
-    } else {
-      // Do something...
-    }
+    const keys = Object.keys(this.form.controls);
+    const payload = keys.map((col) => this.getColumnValue(col));
+    if (this.form.valid) this.submit.emit(payload);
   }
 
   typeChange(event: Event, col: string) {
@@ -146,5 +155,14 @@ export class MapColumns implements OnInit {
 
   goBack() {
     this.cancel.emit();
+  }
+
+  getColumnValue(col: string): MappedColumn {
+    const group = this.form.controls[col];
+    return {
+      column: col,
+      type: group.controls.type.value,
+      format: group.controls.format.value,
+    };
   }
 }

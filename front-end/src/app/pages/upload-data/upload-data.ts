@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RuxTab, RuxTabPanel, RuxTabPanels, RuxTabs } from '@astrouxds/angular';
 import { DragAndDrop } from '../../components/drag-and-drop/drag-and-drop';
-import { MapColumns } from '../../components/map-columns/map-columns';
+import { MapColumns, MappedColumn } from '../../components/map-columns/map-columns';
 
 type Tab = 'selectFilesTab' | 'mapColumnsTab';
 
@@ -27,5 +27,9 @@ export class UploadData {
 
   public cancelMap() {
     this.activeTab = 'selectFilesTab';
+  }
+
+  public handleMappedColumns(data: MappedColumn[]) {
+    console.log('Data', data);
   }
 }
