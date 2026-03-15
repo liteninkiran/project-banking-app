@@ -57,7 +57,8 @@ export class MapColumns implements OnInit {
     const group: Record<string, FormControl<ColumnType>> = {};
     const options = { validators: [Validators.required] };
     const createControl = (col: string) => {
-      group[col] = this.fb.control<ColumnType>('string', options);
+      const defaultValue: ColumnType = col.endsWith('Date') ? 'date' : 'string';
+      group[col] = this.fb.control<ColumnType>(defaultValue, options);
     };
     columns.forEach(createControl);
     return this.fb.group(group);
@@ -74,7 +75,7 @@ export class MapColumns implements OnInit {
     }
   }
 
-  setSelectValue(event: Event, col: string) {
+  selectChange(event: Event, col: string) {
     const target = event.target as any;
     this.form.controls[col].setValue(target.value);
   }

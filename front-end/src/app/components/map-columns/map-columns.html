@@ -7,9 +7,10 @@
         [labelId]="`mapColumns_label_${col.camel}`"
         [name]="`mapColumns_select_${col.camel}`"
         [label]="col.label"
-        (ruxchange)="setSelectValue($event, col.camel)"
+        [value]="form.controls[col.camel].value"
         [invalid]="submitted && form.controls[col.camel]?.invalid"
         [errorText]="submitted && form.controls[col.camel]?.invalid ? 'Please select a type' : ''"
+        (ruxchange)="selectChange($event, col.camel)"
       >
         @for (type of columnTypes; track type) {
           <rux-option [value]="type" [label]="type | titlecase"></rux-option>
