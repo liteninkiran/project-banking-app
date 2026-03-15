@@ -14,7 +14,7 @@ import {
   ReactiveFormsModule,
   FormControl,
 } from '@angular/forms';
-import { RuxButton, RuxSelect, RuxOption } from '@astrouxds/angular';
+import { RuxButton, RuxSelect, RuxOption, RuxInput } from '@astrouxds/angular';
 import { toCamelCase } from '../../utils/helper';
 
 type ColumnType = 'string' | 'number' | 'date';
@@ -24,8 +24,13 @@ type ColumnHeader = {
   camel: string;
 };
 
+type ColumnFormGroup = FormGroup<{
+  type: FormControl<ColumnType>;
+  format: FormControl<string>;
+}>;
+
 type ColumnFormControls = {
-  [key: string]: FormControl<ColumnType>;
+  [key: string]: ColumnFormGroup;
 };
 
 @Component({
@@ -34,7 +39,7 @@ type ColumnFormControls = {
   styleUrl: './map-columns.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [RuxButton, RuxSelect, RuxOption, ReactiveFormsModule, TitleCasePipe],
+  imports: [RuxButton, RuxSelect, RuxOption, ReactiveFormsModule, TitleCasePipe, RuxInput],
 })
 export class MapColumns implements OnInit {
   @Input() public columns = '';
@@ -61,15 +66,22 @@ export class MapColumns implements OnInit {
     this.form = this.createForm();
   }
 
-  private createForm(): FormGroup {
-    const columns = this.columnHeaders.map((col) => col.camel);
-    const group: Record<string, FormControl<ColumnType>> = {};
-    const options = { validators: [Validators.required] };
+  private createForm(): FormGroup<ColumnFormControls> {
+    const group: Record<string, ColumnFormGroup> = {};
+
     const createControl = (col: string) => {
-      const defaultValue: ColumnType = col.endsWith('Date') ? 'date' : 'string';
-      group[col] = this.fb.control<ColumnType>(defaultValue, options);
+      const defaultType: ColumnType = col.endsWith('Date') ? 'date' : 'string';
+
+      group[col] = this.fb.group({
+        type: this.fb.control<ColumnType>(defaultType, {
+          validators: [Validators.required],
+        }),
+        format: this.fb.control<string>(''),
+      });
     };
-    columns.forEach(createControl);
+
+    this.columnHeaders.map((c) => c.camel).forEach(createControl);
+
     return this.fb.group(group);
   }
 
@@ -84,9 +96,11 @@ export class MapColumns implements OnInit {
     }
   }
 
-  selectChange(event: Event, col: string) {
+  formChange(event: Event, col: string, field: 'type' | 'format') {
     const target = event.target as any;
-    this.form.controls[col].setValue(target.value);
+    this.form.controls[col].patchValue({
+      [field]: target.value,
+    });
   }
 
   goBack() {

@@ -1,4 +1,7 @@
 .form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 20px;
   margin-bottom: 20px;
 }
 
@@ -16,4 +19,8 @@ form {
   rux-button {
     width: 100px;
   }
+}
+
+.form-row.single rux-select {
+  grid-column: span 2;
 }
