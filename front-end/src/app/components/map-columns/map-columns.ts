@@ -4,7 +4,6 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnDestroy,
   OnInit,
   Output,
 } from '@angular/core';
@@ -20,7 +19,6 @@ import {
 } from '@angular/forms';
 import { RuxButton, RuxSelect, RuxOption, RuxInput } from '@astrouxds/angular';
 import { toCamelCase } from '../../utils/helper';
-import { Subscription } from 'rxjs';
 
 type ColumnType = 'string' | 'number' | 'date';
 
@@ -46,7 +44,7 @@ type ColumnFormControls = {
   standalone: true,
   imports: [RuxButton, RuxSelect, RuxOption, ReactiveFormsModule, TitleCasePipe, RuxInput],
 })
-export class MapColumns implements OnInit, OnDestroy {
+export class MapColumns implements OnInit {
   @Input() public columns = '';
 
   @Output() public cancel = new EventEmitter<void>();
@@ -56,18 +54,10 @@ export class MapColumns implements OnInit, OnDestroy {
   public submitted = false;
   public columnTypes: ColumnType[] = ['string', 'number', 'date'];
 
-  private subscriptions: Subscription[] = [];
-
   constructor(private fb: NonNullableFormBuilder) {}
 
   ngOnInit() {
     this.setupForm();
-  }
-
-  ngOnDestroy() {
-    if (this.subscriptions.length > 0) {
-      this.subscriptions.forEach((sub) => sub.unsubscribe());
-    }
   }
 
   private setupForm() {
@@ -87,31 +77,37 @@ export class MapColumns implements OnInit, OnDestroy {
 
     const createControl = (col: string) => {
       const defaultValue: ColumnType | '' = col.endsWith('Date') ? 'date' : '';
-      const columnGroup = this.fb.group({
-        type: this.fb.control<ColumnType | ''>(defaultValue, options),
-        format: this.fb.control<string>(''),
-      });
 
-      // Apply conditional validator immediately for initial value
-      const formatControl = columnGroup.controls.format;
-      if (defaultValue === 'date') {
-        formatControl.setValidators([Validators.required]);
-        formatControl.updateValueAndValidity();
-      }
+      const dateFormatRequiredValidator = (): ValidatorFn => {
+        return (group: AbstractControl): ValidationErrors | null => {
+          const formGroup = group as FormGroup;
+          const typeControl = formGroup.get('type');
+          const formatControl = formGroup.get('format');
 
-      // Subscribe for future changes
-      const subscriptionFn = (type: ColumnType | '') => {
-        if (type === 'date') {
-          formatControl.setValidators([Validators.required]);
-        } else {
-          formatControl.clearValidators();
-          formatControl.setValue('');
-        }
-        formatControl.updateValueAndValidity();
+          if (!typeControl || !formatControl) return null;
+
+          // If type is 'date', format must not be empty
+          if (typeControl.value === 'date' && !formatControl.value) {
+            formatControl.setErrors({ required: true });
+            return { formatRequired: true };
+          }
+
+          // Otherwise, clear errors
+          if (formatControl.hasError('required')) {
+            formatControl.setErrors(null);
+          }
+
+          return null;
+        };
       };
-      const sub = columnGroup.controls.type.valueChanges.subscribe(subscriptionFn);
 
-      this.subscriptions.push(sub);
+      const columnGroup = this.fb.group(
+        {
+          type: this.fb.control<ColumnType | ''>(defaultValue, options),
+          format: this.fb.control<string>(''),
+        },
+        { validators: dateFormatRequiredValidator() },
+      );
 
       group[col] = columnGroup;
     };
