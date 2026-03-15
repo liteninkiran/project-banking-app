@@ -1,3 +1,15 @@
-<h1>CSV Drag & Drop Upload</h1>
+<h1>Upload CSV Data</h1>
 
-<app-drag-and-drop></app-drag-and-drop>
+<rux-tabs id="dataUploadTabs">
+  <rux-tab id="selectFilesTab" [disabled]="activeTab !== 'selectFilesTab'">Select Files</rux-tab>
+  <rux-tab id="mapColumnsTab" [disabled]="activeTab !== 'mapColumnsTab'"
+    >Map Column Headers</rux-tab
+  >
+</rux-tabs>
+
+<rux-tab-panels aria-labelledby="dataUploadPanels">
+  <rux-tab-panel aria-labelledby="selectFilesPanel"
+    ><app-drag-and-drop></app-drag-and-drop
+  ></rux-tab-panel>
+  <rux-tab-panel aria-labelledby="mapColumnsPanel"></rux-tab-panel>
+</rux-tab-panels>

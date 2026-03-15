@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { DragAndDrop } from '../../components/drag-and-drop/drag-and-drop';
+import { RuxTab, RuxTabPanel, RuxTabPanels, RuxTabs } from '@astrouxds/angular';
 
 @Component({
   selector: 'app-upload-data',
@@ -7,6 +8,8 @@ import { DragAndDrop } from '../../components/drag-and-drop/drag-and-drop';
   styleUrl: './upload-data.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [DragAndDrop],
+  imports: [DragAndDrop, RuxTabs, RuxTab, RuxTabPanels, RuxTabPanel],
 })
-export class UploadData {}
+export class UploadData {
+  public activeTab = 'selectFilesTab';
+}
