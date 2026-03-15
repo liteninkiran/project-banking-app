@@ -14,6 +14,9 @@ import {
   Validators,
   ReactiveFormsModule,
   FormControl,
+  ValidatorFn,
+  AbstractControl,
+  ValidationErrors,
 } from '@angular/forms';
 import { RuxButton, RuxSelect, RuxOption, RuxInput } from '@astrouxds/angular';
 import { toCamelCase } from '../../utils/helper';
@@ -78,20 +81,20 @@ export class MapColumns implements OnInit, OnDestroy {
 
   private createForm(): FormGroup<ColumnFormControls> {
     const group: Record<string, ColumnFormGroup> = {};
+    const options = {
+      validators: [Validators.required],
+    };
 
     const createControl = (col: string) => {
-      const defaultType: ColumnType | '' = col.endsWith('Date') ? 'date' : '';
-
+      const defaultValue: ColumnType | '' = col.endsWith('Date') ? 'date' : '';
       const columnGroup = this.fb.group({
-        type: this.fb.control<ColumnType | ''>(defaultType, {
-          validators: [Validators.required],
-        }),
+        type: this.fb.control<ColumnType | ''>(defaultValue, options),
         format: this.fb.control<string>(''),
       });
 
       // Apply conditional validator immediately for initial value
       const formatControl = columnGroup.controls.format;
-      if (defaultType === 'date') {
+      if (defaultValue === 'date') {
         formatControl.setValidators([Validators.required]);
         formatControl.updateValueAndValidity();
       }
@@ -120,7 +123,7 @@ export class MapColumns implements OnInit, OnDestroy {
 
   onSubmit() {
     this.submitted = true;
-    console.log('Form values:', this.form.value);
+    console.log(this.form.valid, this.form.value);
 
     if (this.form.valid) {
       // Send to backend...
