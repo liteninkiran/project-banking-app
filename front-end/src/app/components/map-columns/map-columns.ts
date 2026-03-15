@@ -4,6 +4,7 @@ import {
   Component,
   EventEmitter,
   Input,
+  OnDestroy,
   OnInit,
   Output,
 } from '@angular/core';
@@ -16,6 +17,7 @@ import {
 } from '@angular/forms';
 import { RuxButton, RuxSelect, RuxOption, RuxInput } from '@astrouxds/angular';
 import { toCamelCase } from '../../utils/helper';
+import { Subscription } from 'rxjs';
 
 type ColumnType = 'string' | 'number' | 'date';
 
@@ -25,7 +27,7 @@ type ColumnHeader = {
 };
 
 type ColumnFormGroup = FormGroup<{
-  type: FormControl<ColumnType>;
+  type: FormControl<ColumnType | ''>;
   format: FormControl<string>;
 }>;
 
@@ -41,7 +43,7 @@ type ColumnFormControls = {
   standalone: true,
   imports: [RuxButton, RuxSelect, RuxOption, ReactiveFormsModule, TitleCasePipe, RuxInput],
 })
-export class MapColumns implements OnInit {
+export class MapColumns implements OnInit, OnDestroy {
   @Input() public columns = '';
 
   @Output() public cancel = new EventEmitter<void>();
@@ -51,10 +53,18 @@ export class MapColumns implements OnInit {
   public submitted = false;
   public columnTypes: ColumnType[] = ['string', 'number', 'date'];
 
+  private subscriptions: Subscription[] = [];
+
   constructor(private fb: NonNullableFormBuilder) {}
 
   ngOnInit() {
     this.setupForm();
+  }
+
+  ngOnDestroy() {
+    if (this.subscriptions.length > 0) {
+      this.subscriptions.forEach((sub) => sub.unsubscribe());
+    }
   }
 
   private setupForm() {
@@ -70,14 +80,37 @@ export class MapColumns implements OnInit {
     const group: Record<string, ColumnFormGroup> = {};
 
     const createControl = (col: string) => {
-      const defaultType: ColumnType = col.endsWith('Date') ? 'date' : 'string';
+      const defaultType: ColumnType | '' = col.endsWith('Date') ? 'date' : '';
 
-      group[col] = this.fb.group({
-        type: this.fb.control<ColumnType>(defaultType, {
+      const columnGroup = this.fb.group({
+        type: this.fb.control<ColumnType | ''>(defaultType, {
           validators: [Validators.required],
         }),
         format: this.fb.control<string>(''),
       });
+
+      // Apply conditional validator immediately for initial value
+      const formatControl = columnGroup.controls.format;
+      if (defaultType === 'date') {
+        formatControl.setValidators([Validators.required]);
+        formatControl.updateValueAndValidity();
+      }
+
+      // Subscribe for future changes
+      const subscriptionFn = (type: ColumnType | '') => {
+        if (type === 'date') {
+          formatControl.setValidators([Validators.required]);
+        } else {
+          formatControl.clearValidators();
+          formatControl.setValue('');
+        }
+        formatControl.updateValueAndValidity();
+      };
+      const sub = columnGroup.controls.type.valueChanges.subscribe(subscriptionFn);
+
+      this.subscriptions.push(sub);
+
+      group[col] = columnGroup;
     };
 
     this.columnHeaders.map((c) => c.camel).forEach(createControl);

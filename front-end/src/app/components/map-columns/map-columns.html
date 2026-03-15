@@ -8,10 +8,13 @@
         [name]="`mapColumns_select_${col.camel}`"
         [label]="col.label"
         [value]="form.controls[col.camel].controls.type.value"
-        [invalid]="submitted && form.controls[col.camel]?.invalid"
-        [errorText]="submitted && form.controls[col.camel]?.invalid ? 'Please select a type' : ''"
+        [invalid]="submitted && form.controls[col.camel].controls.type.invalid"
+        [errorText]="
+          submitted && form.controls[col.camel].controls.type.invalid ? 'Please select a type' : ''
+        "
         (ruxchange)="formChange($event, col.camel, 'type')"
       >
+        <rux-option value="" selected label="Select an option"></rux-option>
         @for (type of columnTypes; track type) {
           <rux-option [value]="type" [label]="type | titlecase"></rux-option>
         }
@@ -21,6 +24,12 @@
         <rux-input
           label="Format"
           [value]="form.controls[col.camel].controls.format.value"
+          [invalid]="submitted && form.controls[col.camel].controls.format.invalid"
+          [errorText]="
+            submitted && form.controls[col.camel].controls.format.invalid
+              ? 'Please enter a date format'
+              : ''
+          "
           (ruxchange)="formChange($event, col.camel, 'format')"
         ></rux-input>
       }
