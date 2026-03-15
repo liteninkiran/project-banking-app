@@ -1,31 +1,35 @@
 <div id="container">
   @if (errMsg) {
-    <rux-notification
-      open=""
-      status="critical"
-      [message]="errMsg"
-      (ruxclosed)="bannerClosed()"
-    ></rux-notification>
+    <div id="dragAndDrop_errorBanner">
+      <rux-notification
+        open=""
+        status="critical"
+        [message]="errMsg"
+        (ruxclosed)="bannerClosed()"
+      ></rux-notification>
+    </div>
   }
 
   <div
-    id="drop-zone"
+    id="dragAndDrop_dropZone"
     (drop)="onFileDropped($event.dataTransfer); $event.preventDefault()"
     (dragover)="$event.preventDefault()"
   >
-    <p>Drag & Drop CSV files here</p>
+    <h2>Drag and drop CSV files here</h2>
 
-    <rux-button (click)="fileInput.click()" id="select-files">Select CSV Files</rux-button>
+    <rux-button (click)="fileInput.click()" id="dragAndDrop_selectFilesButton"
+      >Select CSV Files</rux-button
+    >
     <input
+      id="dragAndDrop_selectFilesInput"
       #fileInput
       type="file"
       multiple
-      style="display: none"
       (change)="fileBrowseHandler($event)"
     />
   </div>
 
-  @if (files.length) {
+  @if (files.length > 0) {
     <div id="files-container">
       <div>
         <h3 id="upload-header">Files to upload:</h3>

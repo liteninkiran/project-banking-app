@@ -1,10 +1,10 @@
 #container {
-  max-width: 500px;
   margin: 50px auto;
   text-align: center;
+  max-width: 700px;
 }
 
-#drop-zone {
+#dragAndDrop_dropZone {
   display: grid;
   align-items: end;
   height: 500px;
@@ -15,12 +15,16 @@
   transition: background 0.7s;
 }
 
-#select-files {
+#dragAndDrop_selectFilesButton {
   margin-left: auto;
   margin-right: auto;
 }
 
-#drop-zone:hover {
+#dragAndDrop_selectFilesInput {
+  display: none;
+}
+
+#dragAndDrop_dropZone:hover {
   background: var(--color-background-base-hover);
 }
 
@@ -42,4 +46,8 @@
 
 #upload-header {
   text-align: left;
+}
+
+#dragAndDrop_errorBanner {
+  margin-bottom: 30px;
 }

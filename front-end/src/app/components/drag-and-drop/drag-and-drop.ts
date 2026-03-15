@@ -52,6 +52,7 @@ export class DragAndDrop {
 
   cancel() {
     this.files = [];
+    this.fileKeys = new Set<string>();
     this.cd.markForCheck();
   }
 
@@ -111,7 +112,8 @@ export class DragAndDrop {
       }
 
       if (firstLine !== this.expectedHeader) {
-        alert(`File ${file.name} has different headers`);
+        this.errMsg = `Different headers detected. Please check and try again.`;
+        this.cd.markForCheck();
         callback(false);
         return;
       }
