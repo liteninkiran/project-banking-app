@@ -12,4 +12,8 @@ import { RuxTab, RuxTabPanel, RuxTabPanels, RuxTabs } from '@astrouxds/angular';
 })
 export class UploadData {
   public activeTab = 'selectFilesTab';
+
+  public getFileData(fileData: string[]) {
+    console.log(fileData);
+  }
 }

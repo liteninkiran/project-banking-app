@@ -1,5 +1,10 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Output,
+} from '@angular/core';
 import { RuxButton, RuxNotification } from '@astrouxds/angular';
 
 @Component({
@@ -11,19 +16,17 @@ import { RuxButton, RuxNotification } from '@astrouxds/angular';
   imports: [RuxButton, RuxNotification],
 })
 export class DragAndDrop {
-  files: File[] = [];
-  uploading = false;
-
   private expectedHeader: string | null = null;
-  private fileContent = '';
+  private fileContent: string[] = [];
   private fileKeys = new Set<string>();
 
+  public files: File[] = [];
+  public uploading = false;
   public errMsg = '';
 
-  constructor(
-    private http: HttpClient,
-    private cd: ChangeDetectorRef,
-  ) {}
+  @Output() public fileData = new EventEmitter<string[]>();
+
+  constructor(private cd: ChangeDetectorRef) {}
 
   onFileDropped(dt: DataTransfer | null) {
     if (dt?.files) {
@@ -42,7 +45,7 @@ export class DragAndDrop {
 
   uploadFiles() {
     if (!this.files.length) return;
-    this.fileContent = '';
+    this.fileContent = [];
     this.expectedHeader = null;
     this.processNextFile(0);
   }
@@ -71,7 +74,7 @@ export class DragAndDrop {
 
       reader.onload = (e) => {
         const text = e.target?.result as string;
-        this.fileContent += text + '\n';
+        this.fileContent.push(text);
         this.processNextFile(index + 1);
       };
 
@@ -120,22 +123,8 @@ export class DragAndDrop {
   }
 
   private completionCallback() {
+    this.fileData.emit(this.fileContent);
     this.cancel();
-    console.log('File Content:');
-    console.log(this.fileContent);
-    // // POST to back-end
-    // this.uploading = true;
-    // this.http.post('https://your-backend-endpoint.com/upload', fileContent).subscribe({
-    //   next: (res) => {
-    //     console.log('Upload successful', res);
-    //     this.files = [];
-    //     this.uploading = false;
-    //   },
-    //   error: (err) => {
-    //     console.error('Upload failed', err);
-    //     this.uploading = false;
-    //   },
-    // });
   }
 
   private addFiles(files: FileList) {
