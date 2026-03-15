@@ -44,7 +44,7 @@
 
     <div class="submit-button">
       <rux-button type="button" (click)="goBack()" secondary>Back</rux-button>
-      <rux-button type="button" (click)="onSubmit()">Submit</rux-button>
+      <rux-button type="button" (click)="onSubmit()" [disabled]="submitted">Submit</rux-button>
     </div>
   </form>
 }

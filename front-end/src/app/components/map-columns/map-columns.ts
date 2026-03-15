@@ -143,10 +143,11 @@ export class MapColumns implements OnInit, OnChanges {
   }
 
   onSubmit() {
+    if (!this.form.valid) return;
     this.submitted = true;
     const keys = Object.keys(this.form.controls);
     const payload = keys.map((col) => this.getColumnValue(col));
-    if (this.form.valid) this.submit.emit(payload);
+    this.submit.emit(payload);
   }
 
   typeChange(event: Event, col: string) {

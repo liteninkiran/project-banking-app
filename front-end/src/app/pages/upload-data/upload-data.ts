@@ -24,7 +24,6 @@ export class UploadData {
   public metaData: MappedColumn[] = [];
 
   public getFileData(fileData: string[]) {
-    // console.log(fileData);
     this.fileData = fileData;
     this.columns = fileData[0].split(/\r?\n/)[0].trim();
     this.activeTab = 'mapColumnsTab';
@@ -36,6 +35,7 @@ export class UploadData {
 
   public handleMappedColumns(metaData: MappedColumn[]) {
     this.metaData = metaData;
-    // console.log(this.metaData, this.fileData);
+    console.log(this.metaData);
+    this.fileData.map((file) => console.log(file));
   }
 }
