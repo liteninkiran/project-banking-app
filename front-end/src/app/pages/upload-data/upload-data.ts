@@ -5,6 +5,8 @@ import { MapColumns, MappedColumn } from '../../components/map-columns/map-colum
 
 type Tab = 'selectFilesTab' | 'mapColumnsTab';
 
+const defaultHeaders = 'Transaction Date,Transaction Type,Value,Balance,Account';
+
 @Component({
   selector: 'app-upload-data',
   templateUrl: './upload-data.html',
@@ -16,12 +18,15 @@ type Tab = 'selectFilesTab' | 'mapColumnsTab';
 export class UploadData {
   constructor() {}
 
-  public activeTab: Tab = 'mapColumnsTab';
-  public columns = 'Transaction Date,Type,Description,Value,Balance,Account Name,Account Number';
+  public activeTab: Tab = 'selectFilesTab';
+  public columns = '';
+  public fileData: string[] = [];
+  public metaData: MappedColumn[] = [];
 
   public getFileData(fileData: string[]) {
-    console.log(fileData);
-    this.columns = fileData[0].split(/\r?\n/)[0];
+    // console.log(fileData);
+    this.fileData = fileData;
+    this.columns = fileData[0].split(/\r?\n/)[0].trim();
     this.activeTab = 'mapColumnsTab';
   }
 
@@ -29,7 +34,8 @@ export class UploadData {
     this.activeTab = 'selectFilesTab';
   }
 
-  public handleMappedColumns(data: MappedColumn[]) {
-    console.log('Data', data);
+  public handleMappedColumns(metaData: MappedColumn[]) {
+    this.metaData = metaData;
+    // console.log(this.metaData, this.fileData);
   }
 }

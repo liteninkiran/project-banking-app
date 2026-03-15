@@ -1,43 +1,50 @@
-<form [formGroup]="form">
-  @for (col of columnHeaders; track col) {
-    <div class="form-row" [class.single]="form.controls[col.camel].controls.type.value !== 'date'">
-      <rux-select
-        [id]="`mapColumns_ruxSelect_${col.camel}`"
-        [inputId]="`mapColumns_input_${col.camel}`"
-        [labelId]="`mapColumns_label_${col.camel}`"
-        [name]="`mapColumns_select_${col.camel}`"
-        [label]="col.label"
-        [value]="form.controls[col.camel].controls.type.value"
-        [invalid]="submitted && form.controls[col.camel].controls.type.invalid"
-        [errorText]="
-          submitted && form.controls[col.camel].controls.type.invalid ? 'Please select a type' : ''
-        "
-        (ruxchange)="typeChange($event, col.camel)"
+@if (columns) {
+  <form [formGroup]="form">
+    @for (col of columnHeaders; track col) {
+      <div
+        class="form-row"
+        [class.single]="form.controls[col.camel].controls.type.value !== 'date'"
       >
-        <!-- <rux-option value="" selected label="Select an option"></rux-option> -->
-        @for (type of columnTypes; track type) {
-          <rux-option [value]="type" [label]="type | titlecase"></rux-option>
-        }
-      </rux-select>
-
-      @if (form.controls[col.camel].controls.type.value === 'date') {
-        <rux-input
-          label="Format"
-          [value]="form.controls[col.camel].controls.format.value"
-          [invalid]="submitted && form.controls[col.camel].controls.format.invalid"
+        <rux-select
+          [id]="`mapColumns_ruxSelect_${col.camel}`"
+          [inputId]="`mapColumns_input_${col.camel}`"
+          [labelId]="`mapColumns_label_${col.camel}`"
+          [name]="`mapColumns_select_${col.camel}`"
+          [label]="col.label"
+          [value]="form.controls[col.camel].controls.type.value"
+          [invalid]="submitted && form.controls[col.camel].controls.type.invalid"
           [errorText]="
-            submitted && form.controls[col.camel].controls.format.invalid
-              ? 'Please enter a date format'
+            submitted && form.controls[col.camel].controls.type.invalid
+              ? 'Please select a type'
               : ''
           "
-          (ruxchange)="formatChange($event, col.camel)"
-        ></rux-input>
-      }
-    </div>
-  }
+          (ruxchange)="typeChange($event, col.camel)"
+        >
+          <!-- <rux-option value="" selected label="Select an option"></rux-option> -->
+          @for (type of columnTypes; track type) {
+            <rux-option [value]="type" [label]="type | titlecase"></rux-option>
+          }
+        </rux-select>
 
-  <div class="submit-button">
-    <rux-button type="button" (click)="goBack()" secondary>Back</rux-button>
-    <rux-button type="button" (click)="onSubmit()">Submit</rux-button>
-  </div>
-</form>
+        @if (form.controls[col.camel].controls.type.value === 'date') {
+          <rux-input
+            label="Format"
+            [value]="form.controls[col.camel].controls.format.value"
+            [invalid]="submitted && form.controls[col.camel].controls.format.invalid"
+            [errorText]="
+              submitted && form.controls[col.camel].controls.format.invalid
+                ? 'Please enter a date format'
+                : ''
+            "
+            (ruxchange)="formatChange($event, col.camel)"
+          ></rux-input>
+        }
+      </div>
+    }
+
+    <div class="submit-button">
+      <rux-button type="button" (click)="goBack()" secondary>Back</rux-button>
+      <rux-button type="button" (click)="onSubmit()">Submit</rux-button>
+    </div>
+  </form>
+}

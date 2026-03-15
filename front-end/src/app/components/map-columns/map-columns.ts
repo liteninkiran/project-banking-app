@@ -4,8 +4,11 @@ import {
   Component,
   EventEmitter,
   Input,
+  OnChanges,
   OnInit,
   Output,
+  SimpleChange,
+  SimpleChanges,
 } from '@angular/core';
 import {
   NonNullableFormBuilder,
@@ -48,6 +51,10 @@ export type MappedColumn = {
   format: string;
 };
 
+type InputChanges = {
+  columns?: SimpleChange<string>;
+};
+
 const DEFAULT_FORMAT = 'd/m/Y';
 
 @Component({
@@ -58,7 +65,7 @@ const DEFAULT_FORMAT = 'd/m/Y';
   standalone: true,
   imports: [RuxButton, RuxSelect, RuxOption, ReactiveFormsModule, TitleCasePipe, RuxInput],
 })
-export class MapColumns implements OnInit {
+export class MapColumns implements OnInit, OnChanges {
   @Input() public columns = '';
 
   @Output() public cancel = new EventEmitter<void>();
@@ -71,11 +78,19 @@ export class MapColumns implements OnInit {
 
   constructor(private fb: NonNullableFormBuilder) {}
 
-  ngOnInit() {
-    this.setupForm();
+  ngOnChanges(changes: InputChanges): void {
+    if ('columns' in changes) {
+      const change = changes['columns'];
+      if (change && change.currentValue) {
+        this.setupForm();
+      }
+    }
   }
 
+  ngOnInit() {}
+
   private setupForm() {
+    if (this.columns === '') return;
     const mapColStringToObject = (col: string) => ({
       label: col,
       camel: toCamelCase(col),
@@ -112,8 +127,9 @@ export class MapColumns implements OnInit {
       };
     };
     const createControl = (col: string) => {
-      const defaultType: ColumnType = col.endsWith('Date') ? 'date' : 'string';
-      const defaultFormat = col.endsWith('Date') ? DEFAULT_FORMAT : '';
+      const isDate = col.toLowerCase().endsWith('date');
+      const defaultType: ColumnType = isDate ? 'date' : 'string';
+      const defaultFormat = isDate ? DEFAULT_FORMAT : '';
       const controls = {
         type: this.fb.control<ColumnType>(defaultType, options),
         format: this.fb.control<string>(defaultFormat),
