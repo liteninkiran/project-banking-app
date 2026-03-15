@@ -1,15 +1,25 @@
 <h1>Upload CSV Data</h1>
 
 <rux-tabs id="dataUploadTabs">
-  <rux-tab id="selectFilesTab" [disabled]="activeTab !== 'selectFilesTab'">Select Files</rux-tab>
-  <rux-tab id="mapColumnsTab" [disabled]="activeTab !== 'mapColumnsTab'"
+  <rux-tab
+    id="selectFilesTab"
+    [selected]="activeTab === 'selectFilesTab'"
+    [disabled]="activeTab !== 'selectFilesTab'"
+    >Select Files</rux-tab
+  >
+  <rux-tab
+    id="mapColumnsTab"
+    [selected]="activeTab === 'mapColumnsTab'"
+    [disabled]="activeTab !== 'mapColumnsTab'"
     >Map Column Headers</rux-tab
   >
 </rux-tabs>
 
-<rux-tab-panels aria-labelledby="dataUploadPanels">
-  <rux-tab-panel aria-labelledby="selectFilesPanel"
+<rux-tab-panels id="dataUploadPanels" aria-labelledby="dataUploadTabs">
+  <rux-tab-panel id="selectFilesPanel" aria-labelledby="selectFilesTab"
     ><app-drag-and-drop (fileData)="getFileData($event)"></app-drag-and-drop
   ></rux-tab-panel>
-  <rux-tab-panel aria-labelledby="mapColumnsPanel"></rux-tab-panel>
+  <rux-tab-panel id="mapColumnsPanel" aria-labelledby="mapColumnsTab"
+    >Map column headers</rux-tab-panel
+  >
 </rux-tab-panels>

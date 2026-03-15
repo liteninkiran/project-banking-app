@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
 import { DragAndDrop } from '../../components/drag-and-drop/drag-and-drop';
 import { RuxTab, RuxTabPanel, RuxTabPanels, RuxTabs } from '@astrouxds/angular';
 
@@ -11,9 +11,13 @@ import { RuxTab, RuxTabPanel, RuxTabPanels, RuxTabs } from '@astrouxds/angular';
   imports: [DragAndDrop, RuxTabs, RuxTab, RuxTabPanels, RuxTabPanel],
 })
 export class UploadData {
+  constructor(private cd: ChangeDetectorRef) {}
+
   public activeTab = 'selectFilesTab';
 
   public getFileData(fileData: string[]) {
     console.log(fileData);
+    this.activeTab = 'mapColumnsTab';
+    this.cd.markForCheck();
   }
 }
