@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
-import { DragAndDrop } from '../../components/drag-and-drop/drag-and-drop';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RuxTab, RuxTabPanel, RuxTabPanels, RuxTabs } from '@astrouxds/angular';
+import { DragAndDrop } from '../../components/drag-and-drop/drag-and-drop';
+import { MapColumns } from '../../components/map-columns/map-columns';
 
 @Component({
   selector: 'app-upload-data',
@@ -8,16 +9,17 @@ import { RuxTab, RuxTabPanel, RuxTabPanels, RuxTabs } from '@astrouxds/angular';
   styleUrl: './upload-data.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [DragAndDrop, RuxTabs, RuxTab, RuxTabPanels, RuxTabPanel],
+  imports: [DragAndDrop, MapColumns, RuxTabs, RuxTab, RuxTabPanels, RuxTabPanel],
 })
 export class UploadData {
-  constructor(private cd: ChangeDetectorRef) {}
+  constructor() {}
 
   public activeTab = 'selectFilesTab';
+  public columns = '';
 
   public getFileData(fileData: string[]) {
     console.log(fileData);
+    this.columns = fileData[0].split(/\r?\n/)[0];
     this.activeTab = 'mapColumnsTab';
-    this.cd.markForCheck();
   }
 }

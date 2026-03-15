@@ -11,7 +11,7 @@
     id="mapColumnsTab"
     [selected]="activeTab === 'mapColumnsTab'"
     [disabled]="activeTab !== 'mapColumnsTab'"
-    >Map Column Headers</rux-tab
+    >Map Columns</rux-tab
   >
 </rux-tabs>
 
@@ -20,6 +20,6 @@
     ><app-drag-and-drop (fileData)="getFileData($event)"></app-drag-and-drop
   ></rux-tab-panel>
   <rux-tab-panel id="mapColumnsPanel" aria-labelledby="mapColumnsTab"
-    >Map column headers</rux-tab-panel
-  >
+    ><app-map-columns [columns]="columns"></app-map-columns
+  ></rux-tab-panel>
 </rux-tab-panels>

@@ -1,0 +1,7 @@
+@if (columns) {
+  <ul>
+    @for (column of columns.split(','); track column) {
+      <li>{{ column }}</li>
+    }
+  </ul>
+}
