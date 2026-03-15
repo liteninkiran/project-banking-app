@@ -74,44 +74,37 @@ export class MapColumns implements OnInit {
     const options = {
       validators: [Validators.required],
     };
+    const dateFormatRequiredValidator = (): ValidatorFn => {
+      return (group: AbstractControl): ValidationErrors | null => {
+        const formGroup = group as FormGroup;
+        const typeControl = formGroup.get('type');
+        const formatControl = formGroup.get('format');
 
+        if (!typeControl || !formatControl) return null;
+
+        // If type is 'date', format must not be empty
+        if (typeControl.value === 'date' && !formatControl.value) {
+          formatControl.setErrors({ required: true });
+          return { formatRequired: true };
+        }
+
+        // Otherwise, clear errors
+        if (formatControl.hasError('required')) {
+          formatControl.setErrors(null);
+        }
+
+        return null;
+      };
+    };
     const createControl = (col: string) => {
       const defaultValue: ColumnType | '' = col.endsWith('Date') ? 'date' : '';
-
-      const dateFormatRequiredValidator = (): ValidatorFn => {
-        return (group: AbstractControl): ValidationErrors | null => {
-          const formGroup = group as FormGroup;
-          const typeControl = formGroup.get('type');
-          const formatControl = formGroup.get('format');
-
-          if (!typeControl || !formatControl) return null;
-
-          // If type is 'date', format must not be empty
-          if (typeControl.value === 'date' && !formatControl.value) {
-            formatControl.setErrors({ required: true });
-            return { formatRequired: true };
-          }
-
-          // Otherwise, clear errors
-          if (formatControl.hasError('required')) {
-            formatControl.setErrors(null);
-          }
-
-          return null;
-        };
+      const controls = {
+        type: this.fb.control<ColumnType | ''>(defaultValue, options),
+        format: this.fb.control<string>(''),
       };
-
-      const columnGroup = this.fb.group(
-        {
-          type: this.fb.control<ColumnType | ''>(defaultValue, options),
-          format: this.fb.control<string>(''),
-        },
-        { validators: dateFormatRequiredValidator() },
-      );
-
-      group[col] = columnGroup;
+      const groupOptions = { validators: dateFormatRequiredValidator() };
+      group[col] = this.fb.group(controls, groupOptions);
     };
-
     this.columnHeaders.map((c) => c.camel).forEach(createControl);
 
     return this.fb.group(group);
