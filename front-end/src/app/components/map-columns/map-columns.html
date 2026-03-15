@@ -1,7 +1,22 @@
-@if (columns) {
-  <ul>
-    @for (column of columns.split(','); track column) {
-      <li>{{ column }}</li>
-    }
-  </ul>
-}
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  @for (col of columnHeaders; track col) {
+    <div class="form-row">
+      <rux-select
+        [id]="`mapColumns_ruxSelect_${col.camel}`"
+        [inputId]="`mapColumns_input_${col.camel}`"
+        [labelId]="`mapColumns_label_${col.camel}`"
+        [name]="`mapColumns_select_${col.camel}`"
+        [label]="col.label"
+        (ruxchange)="setSelectValue($event, col.camel)"
+        [invalid]="submitted && form.controls[col.camel]?.invalid"
+        [errorText]="submitted && form.controls[col.camel]?.invalid ? 'Please select a type' : ''"
+      >
+        @for (type of columnTypes; track type) {
+          <rux-option [value]="type" [label]="type | titlecase"></rux-option>
+        }
+      </rux-select>
+    </div>
+  }
+
+  <rux-button type="submit">Submit</rux-button>
+</form>

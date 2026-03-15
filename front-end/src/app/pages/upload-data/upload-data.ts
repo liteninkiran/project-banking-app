@@ -3,6 +3,8 @@ import { RuxTab, RuxTabPanel, RuxTabPanels, RuxTabs } from '@astrouxds/angular';
 import { DragAndDrop } from '../../components/drag-and-drop/drag-and-drop';
 import { MapColumns } from '../../components/map-columns/map-columns';
 
+type Tab = 'selectFilesTab' | 'mapColumnsTab';
+
 @Component({
   selector: 'app-upload-data',
   templateUrl: './upload-data.html',
@@ -14,8 +16,8 @@ import { MapColumns } from '../../components/map-columns/map-columns';
 export class UploadData {
   constructor() {}
 
-  public activeTab = 'selectFilesTab';
-  public columns = '';
+  public activeTab: Tab = 'mapColumnsTab';
+  public columns = 'Transaction Date,Type,Description,Value,Balance,Account Name,Account Number';
 
   public getFileData(fileData: string[]) {
     console.log(fileData);
