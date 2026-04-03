@@ -27,7 +27,7 @@ export class UploadData {
   public getFileData(fileData: string[]) {
     this.fileData = fileData;
     this.columns = fileData[0].split(/\r?\n/)[0].trim();
-    this.activeTab = 'mapColumnsTab';
+    this.activeTab = 'parseCsvTab';
   }
 
   public cancelMap() {

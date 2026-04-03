@@ -29,20 +29,26 @@
 <rux-tab-panels id="dataUploadPanels" aria-labelledby="dataUploadTabs">
   <!-- Select Files -->
   <rux-tab-panel id="selectFilesPanel" aria-labelledby="selectFilesTab">
-    <app-drag-and-drop (fileData)="getFileData($event)"></app-drag-and-drop>
+    @if (activeTab === 'selectFilesTab') {
+      <app-drag-and-drop (fileData)="getFileData($event)"></app-drag-and-drop>
+    }
   </rux-tab-panel>
 
   <!-- Parse CSV -->
   <rux-tab-panel id="parseCsvPanel" aria-labelledby="parseCsvTab">
-    <app-parse-csv></app-parse-csv>
+    @if (activeTab === 'parseCsvTab') {
+      <app-parse-csv [fileData]="fileData"></app-parse-csv>
+    }
   </rux-tab-panel>
 
   <!-- Map Columns -->
   <rux-tab-panel id="mapColumnsPanel" aria-labelledby="mapColumnsTab">
-    <app-map-columns
-      [columns]="columns"
-      (cancel)="cancelMap()"
-      (submit)="handleMappedColumns($event)"
-    ></app-map-columns>
+    @if (activeTab === 'mapColumnsTab') {
+      <app-map-columns
+        [columns]="columns"
+        (cancel)="cancelMap()"
+        (submit)="handleMappedColumns($event)"
+      ></app-map-columns>
+    }
   </rux-tab-panel>
 </rux-tab-panels>
