@@ -2,8 +2,9 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RuxTab, RuxTabPanel, RuxTabPanels, RuxTabs } from '@astrouxds/angular';
 import { DragAndDrop } from '../../components/drag-and-drop/drag-and-drop';
 import { MapColumns, MappedColumn } from '../../components/map-columns/map-columns';
+import { ParseCsv } from '../../components/parse-csv/parse-csv';
 
-type Tab = 'selectFilesTab' | 'mapColumnsTab';
+type Tab = 'selectFilesTab' | 'parseCsvTab' | 'mapColumnsTab';
 
 const defaultHeaders = 'Transaction Date,Transaction Type,Value,Balance,Account';
 
@@ -13,7 +14,7 @@ const defaultHeaders = 'Transaction Date,Transaction Type,Value,Balance,Account'
   styleUrl: './upload-data.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [DragAndDrop, MapColumns, RuxTabs, RuxTab, RuxTabPanels, RuxTabPanel],
+  imports: [DragAndDrop, MapColumns, ParseCsv, RuxTabs, RuxTab, RuxTabPanels, RuxTabPanel],
 })
 export class UploadData {
   constructor() {}

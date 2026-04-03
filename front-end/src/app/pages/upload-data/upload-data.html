@@ -1,12 +1,23 @@
 <h1>Upload CSV Data</h1>
 
 <rux-tabs id="dataUploadTabs">
+  <!-- Select Files -->
   <rux-tab
     id="selectFilesTab"
     [selected]="activeTab === 'selectFilesTab'"
     [disabled]="activeTab !== 'selectFilesTab'"
     >Select Files</rux-tab
   >
+
+  <!-- Parse CSV -->
+  <rux-tab
+    id="parseCsvTab"
+    [selected]="activeTab === 'parseCsvTab'"
+    [disabled]="activeTab !== 'parseCsvTab'"
+    >Parse CSV</rux-tab
+  >
+
+  <!-- Map Columns -->
   <rux-tab
     id="mapColumnsTab"
     [selected]="activeTab === 'mapColumnsTab'"
@@ -16,14 +27,22 @@
 </rux-tabs>
 
 <rux-tab-panels id="dataUploadPanels" aria-labelledby="dataUploadTabs">
-  <rux-tab-panel id="selectFilesPanel" aria-labelledby="selectFilesTab"
-    ><app-drag-and-drop (fileData)="getFileData($event)"></app-drag-and-drop
-  ></rux-tab-panel>
-  <rux-tab-panel id="mapColumnsPanel" aria-labelledby="mapColumnsTab"
-    ><app-map-columns
+  <!-- Select Files -->
+  <rux-tab-panel id="selectFilesPanel" aria-labelledby="selectFilesTab">
+    <app-drag-and-drop (fileData)="getFileData($event)"></app-drag-and-drop>
+  </rux-tab-panel>
+
+  <!-- Parse CSV -->
+  <rux-tab-panel id="parseCsvPanel" aria-labelledby="parseCsvTab">
+    <app-parse-csv></app-parse-csv>
+  </rux-tab-panel>
+
+  <!-- Map Columns -->
+  <rux-tab-panel id="mapColumnsPanel" aria-labelledby="mapColumnsTab">
+    <app-map-columns
       [columns]="columns"
       (cancel)="cancelMap()"
       (submit)="handleMappedColumns($event)"
-    ></app-map-columns
-  ></rux-tab-panel>
+    ></app-map-columns>
+  </rux-tab-panel>
 </rux-tab-panels>
